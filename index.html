@@ -32,6 +32,7 @@
     font-family:'Inter', sans-serif;
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
   h1,h2,h3{
     font-family:'Space Grotesk', sans-serif;
@@ -43,6 +44,14 @@
   a{color:inherit;}
 
   ::selection{background:var(--teal); color:#fff;}
+
+  /* ---------- scroll progress bar ---------- */
+  .scroll-progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--teal), var(--amber));
+    z-index:100;
+    transition:width 0.08s linear;
+  }
 
   /* ---------- layout helpers ---------- */
   .wrap{max-width:920px; margin:0 auto; padding:0 28px;}
@@ -65,11 +74,12 @@
     margin-bottom:36px;
   }
 
-  /* ---------- reveal on scroll ---------- */
+  /* ---------- reveal on scroll (staggered) ---------- */
   .reveal{
     opacity:0;
-    transform:translateY(22px);
-    transition:opacity 0.7s ease, transform 0.7s ease;
+    transform:translateY(26px);
+    transition:opacity 0.7s cubic-bezier(.21,.9,.32,1), transform 0.7s cubic-bezier(.21,.9,.32,1);
+    transition-delay:var(--d, 0ms);
   }
   .reveal.in-view{opacity:1; transform:translateY(0);}
 
@@ -98,20 +108,33 @@
     display:flex; gap:26px; list-style:none; margin:0; padding:0;
   }
   .nav-links a{
+    position:relative;
     font-family:'IBM Plex Mono', monospace;
     font-size:12.5px;
     text-decoration:none;
     color:var(--ink-soft);
     padding:4px 2px;
-    border-bottom:1px solid transparent;
-    transition:color 0.2s ease, border-color 0.2s ease;
+    transition:color 0.2s ease;
   }
-  .nav-links a:hover{color:var(--teal-deep); border-color:var(--teal-deep);}
+  .nav-links a::after{
+    content:"";
+    position:absolute; left:0; bottom:-2px;
+    width:100%; height:1px;
+    background:var(--teal-deep);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform 0.25s ease;
+  }
+  .nav-links a:hover{color:var(--teal-deep);}
+  .nav-links a:hover::after{transform:scaleX(1);}
+  .nav-links a.active{color:var(--teal-deep);}
+  .nav-links a.active::after{transform:scaleX(1);}
   @media (max-width:640px){ .nav-links{display:none;} }
 
   /* ---------- hero ---------- */
   .hero{
     padding:72px 0 60px;
+    position:relative;
   }
   .terminal{
     background:#0D1420;
@@ -119,6 +142,12 @@
     overflow:hidden;
     box-shadow:0 20px 50px -20px rgba(16,24,43,0.35);
     border:1px solid #1C2740;
+    position:relative;
+    animation:terminal-in 0.6s cubic-bezier(.21,.9,.32,1) both;
+  }
+  @keyframes terminal-in{
+    from{opacity:0; transform:translateY(-14px) scale(0.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
   }
   .terminal-bar{
     display:flex; align-items:center; gap:8px;
@@ -153,16 +182,28 @@
   .result-table{
     margin-top:16px;
     opacity:0;
-    transition:opacity 0.6s ease;
+    transform:translateY(6px);
+    transition:opacity 0.5s ease, transform 0.5s ease;
   }
-  .result-table.show{opacity:1;}
+  .result-table.show{opacity:1; transform:translateY(0);}
   .result-table .r-head, .result-table .r-row{
     display:grid;
     grid-template-columns:180px 1fr;
     gap:14px;
   }
   .result-table .r-head{color:#6B7690; padding-bottom:6px;}
-  .result-table .r-row{color:#E7EEF9; padding:2px 0;}
+  .result-table .r-row{
+    color:#E7EEF9; padding:2px 0;
+    opacity:0;
+    animation:row-in 0.4s ease forwards;
+  }
+  .result-table.show .r-row:nth-child(3){animation-delay:0.05s;}
+  .result-table.show .r-row:nth-child(4){animation-delay:0.15s;}
+  .result-table.show .r-row:nth-child(5){animation-delay:0.25s;}
+  @keyframes row-in{
+    from{opacity:0; transform:translateX(-6px);}
+    to{opacity:1; transform:translateX(0);}
+  }
   .rule{border-bottom:1px dashed #253150; margin:6px 0 8px;}
 
   .hero-lower{
@@ -172,6 +213,17 @@
   .hero-name{
     font-size:clamp(36px,6vw,58px);
     font-weight:700; line-height:1.04;
+    background:linear-gradient(100deg, var(--ink) 40%, var(--teal-deep) 55%, var(--ink) 70%);
+    background-size:220% 100%;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:shimmer 7s ease-in-out infinite;
+  }
+  @keyframes shimmer{
+    0%{background-position:0% 0;}
+    50%{background-position:100% 0;}
+    100%{background-position:0% 0;}
   }
   .hero-role{
     margin-top:10px;
@@ -202,6 +254,11 @@
   .status-pill::before{
     content:""; width:6px; height:6px; border-radius:50%; background:var(--teal);
     box-shadow:0 0 0 3px var(--teal-tint);
+    animation:pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%, 100%{box-shadow:0 0 0 3px var(--teal-tint);}
+    50%{box-shadow:0 0 0 6px var(--teal-tint);}
   }
 
   /* ---------- summary ---------- */
@@ -219,11 +276,12 @@
     border-radius:6px;
     padding:24px 26px;
     margin-bottom:18px;
-    transition:border-color 0.25s ease, box-shadow 0.25s ease;
+    transition:border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
   }
   .schema-block:hover{
     border-color:#B9DDD5;
     box-shadow:0 10px 30px -20px rgba(14,147,132,0.4);
+    transform:translateY(-3px);
   }
   .schema-head{
     font-family:'IBM Plex Mono', monospace;
@@ -240,7 +298,10 @@
     gap:16px;
     padding:8px 0;
     font-size:14.5px;
+    border-radius:4px;
+    transition:background 0.2s ease, padding-left 0.2s ease;
   }
+  .field-row:hover{background:var(--teal-tint); padding-left:8px;}
   .field-row + .field-row{border-top:1px dashed var(--line);}
   .field-name{
     font-family:'IBM Plex Mono', monospace;
@@ -261,9 +322,17 @@
     background:var(--teal-tint);
     color:var(--teal-deep);
     border:1px solid #C9E7E1;
-    transition:transform 0.2s ease, background 0.2s ease;
+    transition:transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    opacity:0;
+    transform:translateY(8px) scale(0.92);
   }
-  .tag:hover{transform:translateY(-2px); background:#D6EFE9;}
+  .tag.tag-in{
+    animation:tag-pop 0.45s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes tag-pop{
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+  .tag:hover{transform:translateY(-3px) scale(1.04); background:#D6EFE9; box-shadow:0 8px 16px -10px rgba(14,147,132,0.5);}
 
   /* ---------- projects ---------- */
   .project-card{
@@ -274,9 +343,19 @@
     margin-bottom:18px;
     position:relative;
     transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    will-change:transform;
+    overflow:hidden;
   }
+  .project-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(500px circle at var(--mx,50%) var(--my,0%), rgba(14,147,132,0.07), transparent 60%);
+    opacity:0;
+    transition:opacity 0.3s ease;
+    pointer-events:none;
+  }
+  .project-card:hover::before{opacity:1;}
   .project-card:hover{
-    transform:translateY(-4px);
     box-shadow:0 18px 40px -22px rgba(16,24,43,0.28);
     border-color:#B9DDD5;
   }
@@ -291,8 +370,9 @@
   }
   .project-card h3{font-size:19px; font-weight:600; margin-bottom:12px;}
   .project-card ul{margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
-  .project-card li{margin-bottom:6px;}
+  .project-card li{margin-bottom:6px; transition:color 0.2s ease;}
   .project-card li::marker{color:var(--teal);}
+  .project-card li:hover{color:var(--ink);}
 
   /* ---------- timeline (internship + education) ---------- */
   .timeline-item{
@@ -301,8 +381,21 @@
     gap:22px;
     padding:20px 0;
     border-top:1px solid var(--line);
+    position:relative;
+    transition:padding-left 0.25s ease;
   }
   .timeline-item:last-child{border-bottom:1px solid var(--line);}
+  .timeline-item::before{
+    content:"";
+    position:absolute; left:-12px; top:26px;
+    width:7px; height:7px; border-radius:50%;
+    background:var(--teal);
+    opacity:0;
+    transform:scale(0);
+    transition:opacity 0.3s ease, transform 0.3s ease;
+  }
+  .timeline-item:hover{padding-left:6px;}
+  .timeline-item:hover::before{opacity:1; transform:scale(1);}
   .t-year{
     font-family:'IBM Plex Mono', monospace;
     font-size:12.5px;
@@ -323,7 +416,9 @@
     border-top:1px solid var(--line);
     font-size:14.5px;
     color:var(--ink-soft);
+    transition:padding-left 0.2s ease, color 0.2s ease;
   }
+  .cert-item:hover{padding-left:6px; color:var(--ink);}
   .cert-list .cert-item:last-child{border-bottom:1px solid var(--line);}
   .check{
     width:18px; height:18px; flex:none;
@@ -331,7 +426,14 @@
     background:var(--teal-tint);
     display:flex; align-items:center; justify-content:center;
   }
-  .check svg{width:10px; height:10px;}
+  .check svg path{
+    stroke-dasharray:14;
+    stroke-dashoffset:14;
+  }
+  .check.draw svg path{
+    animation:draw-check 0.5s ease forwards;
+  }
+  @keyframes draw-check{ to{stroke-dashoffset:0;} }
 
   /* ---------- languages ---------- */
   .lang-row{display:flex; gap:40px; flex-wrap:wrap;}
@@ -362,9 +464,10 @@
   .contact-link .cvalue{
     font-size:15.5px; color:#E7EEF9;
     border-bottom:1px solid transparent;
-    transition:border-color 0.2s ease, color 0.2s ease;
+    transition:border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    display:inline-block;
   }
-  .contact-link:hover .cvalue{color:#7FD6C8; border-color:#7FD6C8;}
+  .contact-link:hover .cvalue{color:#7FD6C8; border-color:#7FD6C8; transform:translateX(3px);}
   .foot-bottom{
     margin-top:56px; padding-top:24px;
     border-top:1px solid #1C2740;
@@ -376,23 +479,25 @@
 </head>
 <body>
 
+<div class="scroll-progress" id="scroll-progress"></div>
+
 <nav>
   <div class="nav-inner">
     <div class="nav-brand">vivek<span>.query()</span></div>
     <ul class="nav-links">
-      <li><a href="#summary">summary</a></li>
-      <li><a href="#skills">skills</a></li>
-      <li><a href="#projects">projects</a></li>
-      <li><a href="#experience">experience</a></li>
-      <li><a href="#education">education</a></li>
-      <li><a href="#contact">contact</a></li>
+      <li><a href="#summary" data-nav>summary</a></li>
+      <li><a href="#skills" data-nav>skills</a></li>
+      <li><a href="#projects" data-nav>projects</a></li>
+      <li><a href="#experience" data-nav>experience</a></li>
+      <li><a href="#education" data-nav>education</a></li>
+      <li><a href="#contact" data-nav>contact</a></li>
     </ul>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <div class="terminal reveal">
+    <div class="terminal">
       <div class="terminal-bar">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="terminal-title">candidates.sql — vivek_kushwaha</span>
@@ -464,7 +569,7 @@
         <span class="field-name">data_quality</span>
         <span class="field-value">Data validation and integrity testing to ensure accuracy and consistency of datasets</span>
       </div>
-      <div class="tag-row">
+      <div class="tag-row" data-tag-row>
         <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">MySQL</span>
         <span class="tag">PyMySQL</span><span class="tag">NumPy</span><span class="tag">pandas</span>
         <span class="tag">Streamlit</span><span class="tag">C</span><span class="tag">C++</span>
@@ -506,7 +611,7 @@
     <div class="comment reveal">projects</div>
     <h2 class="section-title reveal">Academic Projects</h2>
 
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-tilt>
       <span class="project-tag">SQL · Python · OOP</span>
       <h3>Database Management System Project</h3>
       <ul>
@@ -516,7 +621,7 @@
       </ul>
     </div>
 
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-tilt>
       <span class="project-tag">Python · pandas · NumPy</span>
       <h3>Python Automation Script for Data Processing</h3>
       <ul>
@@ -525,7 +630,7 @@
       </ul>
     </div>
 
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-tilt>
       <span class="project-tag">Streamlit · pandas · NumPy</span>
       <h3>Interactive Data Dashboard (Streamlit)</h3>
       <ul>
@@ -647,10 +752,11 @@
 </footer>
 
 <script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Typing effect for hero terminal
   const query = "SELECT name, role, status FROM candidates WHERE skills @> '{python,sql,pandas}';";
   const typedEl = document.getElementById('typed-query');
-  const cursorEl = document.getElementById('cursor');
   const resultEl = document.getElementById('result-table');
   let i = 0;
 
@@ -663,7 +769,21 @@
       setTimeout(() => { resultEl.classList.add('show'); }, 350);
     }
   }
-  window.addEventListener('DOMContentLoaded', () => setTimeout(typeChar, 500));
+  if(reduceMotion){
+    typedEl.textContent = query;
+    resultEl.classList.add('show');
+  } else {
+    window.addEventListener('DOMContentLoaded', () => setTimeout(typeChar, 500));
+  }
+
+  // Stagger delay assignment: within each section, give successive .reveal
+  // elements an increasing transition-delay so groups cascade in together.
+  document.querySelectorAll('section, header').forEach(section => {
+    const items = section.querySelectorAll('.reveal');
+    items.forEach((el, idx) => {
+      el.style.setProperty('--d', (idx * 90) + 'ms');
+    });
+  });
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
@@ -676,6 +796,81 @@
     });
   }, { threshold: 0.12 });
   revealEls.forEach(el => io.observe(el));
+
+  // Tag chip stagger pop-in when the skills schema block enters view
+  document.querySelectorAll('[data-tag-row]').forEach(row => {
+    const tagIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          const tags = entry.target.querySelectorAll('.tag');
+          tags.forEach((tag, idx) => {
+            setTimeout(() => tag.classList.add('tag-in'), idx * 55);
+          });
+          tagIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    tagIo.observe(row);
+  });
+
+  // Checkmark draw-in when certifications come into view
+  document.querySelectorAll('.check').forEach(check => {
+    const checkIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('draw');
+          checkIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    checkIo.observe(check);
+  });
+
+  // Scroll progress bar
+  const progressBar = document.getElementById('scroll-progress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressBar.style.width = scrolled + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  // Active nav link tracking
+  const navLinks = document.querySelectorAll('[data-nav]');
+  const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href')));
+  const navIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = '#' + entry.target.id;
+      const link = document.querySelector('[data-nav][href="' + id + '"]');
+      if(!link) return;
+      if(entry.isIntersecting){
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => { if(s) navIo.observe(s); });
+
+  // Subtle tilt / spotlight follow on project cards
+  if(!reduceMotion){
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2, cy = rect.height / 2;
+        const rotateX = ((y - cy) / cy) * -3;
+        const rotateY = ((x - cx) / cx) * 3;
+        card.style.transform = `translateY(-4px) perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        card.style.setProperty('--mx', (x / rect.width * 100) + '%');
+        card.style.setProperty('--my', (y / rect.height * 100) + '%');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
 </script>
 
 </body>
