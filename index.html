@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivek Kushwaha — Aspiring Data Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F1F3F1;
+    --surface:#FFFFFF;
+    --ink:#10182B;
+    --ink-soft:#4B5468;
+    --ink-faint:#8890A0;
+    --line:#DBDFDA;
+    --teal:#0E9384;
+    --teal-deep:#0B7A6E;
+    --amber:#E7A03D;
+    --teal-tint:#E4F3F0;
+    --amber-tint:#FBEED9;
+    --radius:3px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    margin:0;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
+
+  ::selection{background:var(--teal); color:#fff;}
+
+  /* ---------- layout helpers ---------- */
+  .wrap{max-width:920px; margin:0 auto; padding:0 28px;}
+  section{padding:96px 0;}
+  .comment{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--teal-deep);
+    text-transform:lowercase;
+    letter-spacing:0.02em;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .comment::before{content:"--"; color:var(--ink-faint);}
+  .section-title{
+    font-size:clamp(26px,4vw,36px);
+    font-weight:600;
+    margin-bottom:36px;
+  }
+
+  /* ---------- reveal on scroll ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(22px);
+    transition:opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(241,243,241,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:920px; margin:0 auto; padding:0 28px;
+    height:60px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-brand{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px; font-weight:600; color:var(--ink);
+  }
+  .nav-brand span{color:var(--teal-deep);}
+  .nav-links{
+    display:flex; gap:26px; list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    padding:4px 2px;
+    border-bottom:1px solid transparent;
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .nav-links a:hover{color:var(--teal-deep); border-color:var(--teal-deep);}
+  @media (max-width:640px){ .nav-links{display:none;} }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:72px 0 60px;
+  }
+  .terminal{
+    background:#0D1420;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 20px 50px -20px rgba(16,24,43,0.35);
+    border:1px solid #1C2740;
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:11px 16px;
+    background:#111A2C;
+    border-bottom:1px solid #1C2740;
+  }
+  .dot{width:9px; height:9px; border-radius:50%;}
+  .dot.r{background:#E5636B;} .dot.y{background:#E7B34D;} .dot.g{background:#4FBF87;}
+  .terminal-title{
+    margin-left:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:#6B7690;
+  }
+  .terminal-body{
+    padding:22px 20px 26px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:#B9C2D6;
+    min-height:150px;
+  }
+  .terminal-body .prompt{color:#4FBF87;}
+  .terminal-body .qline{color:#7FD6C8;}
+  #typed-query{white-space:pre-wrap; word-break:break-word;}
+  .cursor{
+    display:inline-block; width:7px; height:15px;
+    background:#7FD6C8; margin-left:2px; vertical-align:middle;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .result-table{
+    margin-top:16px;
+    opacity:0;
+    transition:opacity 0.6s ease;
+  }
+  .result-table.show{opacity:1;}
+  .result-table .r-head, .result-table .r-row{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:14px;
+  }
+  .result-table .r-head{color:#6B7690; padding-bottom:6px;}
+  .result-table .r-row{color:#E7EEF9; padding:2px 0;}
+  .rule{border-bottom:1px dashed #253150; margin:6px 0 8px;}
+
+  .hero-lower{
+    margin-top:52px;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;
+  }
+  .hero-name{
+    font-size:clamp(36px,6vw,58px);
+    font-weight:700; line-height:1.04;
+  }
+  .hero-role{
+    margin-top:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    color:var(--teal-deep);
+  }
+  .hero-contact{
+    display:flex; flex-direction:column; gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  @media (max-width:640px){ .hero-contact{text-align:left;} }
+
+  .status-pill{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--teal-deep);
+    background:var(--teal-tint);
+    border:1px solid #C9E7E1;
+    padding:5px 11px;
+    border-radius:20px;
+    margin-top:18px;
+  }
+  .status-pill::before{
+    content:""; width:6px; height:6px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 0 3px var(--teal-tint);
+  }
+
+  /* ---------- summary ---------- */
+  .summary-text{
+    font-size:17px;
+    color:var(--ink-soft);
+    max-width:760px;
+  }
+  .summary-text strong{color:var(--ink); font-weight:600;}
+
+  /* ---------- skills ---------- */
+  .schema-block{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:24px 26px;
+    margin-bottom:18px;
+    transition:border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .schema-block:hover{
+    border-color:#B9DDD5;
+    box-shadow:0 10px 30px -20px rgba(14,147,132,0.4);
+  }
+  .schema-head{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--teal-deep);
+    text-transform:lowercase;
+    margin-bottom:16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .field-row{
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:16px;
+    padding:8px 0;
+    font-size:14.5px;
+  }
+  .field-row + .field-row{border-top:1px dashed var(--line);}
+  .field-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink);
+    font-weight:600;
+  }
+  .field-value{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .field-row{grid-template-columns:1fr;}
+  }
+  .tag-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:20px;
+    background:var(--teal-tint);
+    color:var(--teal-deep);
+    border:1px solid #C9E7E1;
+    transition:transform 0.2s ease, background 0.2s ease;
+  }
+  .tag:hover{transform:translateY(-2px); background:#D6EFE9;}
+
+  /* ---------- projects ---------- */
+  .project-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:26px 28px;
+    margin-bottom:18px;
+    position:relative;
+    transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .project-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 40px -22px rgba(16,24,43,0.28);
+    border-color:#B9DDD5;
+  }
+  .project-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--amber);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:8px;
+    display:block;
+  }
+  .project-card h3{font-size:19px; font-weight:600; margin-bottom:12px;}
+  .project-card ul{margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
+  .project-card li{margin-bottom:6px;}
+  .project-card li::marker{color:var(--teal);}
+
+  /* ---------- timeline (internship + education) ---------- */
+  .timeline-item{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:22px;
+    padding:20px 0;
+    border-top:1px solid var(--line);
+  }
+  .timeline-item:last-child{border-bottom:1px solid var(--line);}
+  .t-year{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--teal-deep);
+    padding-top:2px;
+  }
+  .t-body h3{font-size:16.5px; font-weight:600; margin-bottom:4px;}
+  .t-org{font-size:13.5px; color:var(--ink-faint); margin-bottom:10px;}
+  .t-body ul{margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
+  .t-body li{margin-bottom:5px;}
+  @media (max-width:640px){ .timeline-item{grid-template-columns:1fr;} .t-year{padding-top:0;} }
+
+  /* ---------- certifications ---------- */
+  .cert-list{display:flex; flex-direction:column; gap:0;}
+  .cert-item{
+    display:flex; align-items:center; gap:12px;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+    font-size:14.5px;
+    color:var(--ink-soft);
+  }
+  .cert-list .cert-item:last-child{border-bottom:1px solid var(--line);}
+  .check{
+    width:18px; height:18px; flex:none;
+    border-radius:50%;
+    background:var(--teal-tint);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .check svg{width:10px; height:10px;}
+
+  /* ---------- languages ---------- */
+  .lang-row{display:flex; gap:40px; flex-wrap:wrap;}
+  .lang-item .lname{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink); font-weight:600;}
+  .lang-item .llevel{font-size:13.5px; color:var(--ink-faint); margin-top:3px;}
+
+  /* ---------- footer / contact ---------- */
+  footer{
+    background:#0D1420;
+    color:#B9C2D6;
+    padding:70px 0 40px;
+  }
+  footer .comment{color:#7FD6C8;}
+  footer .comment::before{color:#4A5674;}
+  footer h2{color:#fff;}
+  .contact-grid{
+    display:flex; gap:40px; flex-wrap:wrap;
+    margin-top:28px;
+  }
+  .contact-link{
+    display:flex; flex-direction:column; gap:6px;
+    text-decoration:none;
+  }
+  .contact-link .clabel{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:#5C6886; text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .contact-link .cvalue{
+    font-size:15.5px; color:#E7EEF9;
+    border-bottom:1px solid transparent;
+    transition:border-color 0.2s ease, color 0.2s ease;
+  }
+  .contact-link:hover .cvalue{color:#7FD6C8; border-color:#7FD6C8;}
+  .foot-bottom{
+    margin-top:56px; padding-top:24px;
+    border-top:1px solid #1C2740;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; color:#4A5674;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand">vivek<span>.query()</span></div>
+    <ul class="nav-links">
+      <li><a href="#summary">summary</a></li>
+      <li><a href="#skills">skills</a></li>
+      <li><a href="#projects">projects</a></li>
+      <li><a href="#experience">experience</a></li>
+      <li><a href="#education">education</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="terminal reveal">
+      <div class="terminal-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="terminal-title">candidates.sql — vivek_kushwaha</span>
+      </div>
+      <div class="terminal-body">
+<span class="prompt">$</span> <span class="qline" id="typed-query"></span><span class="cursor" id="cursor"></span>
+        <div class="result-table" id="result-table">
+          <div class="rule"></div>
+          <div class="r-head"><span>column</span><span>value</span></div>
+          <div class="rule"></div>
+          <div class="r-row"><span>name</span><span>Vivek Kushwaha</span></div>
+          <div class="r-row"><span>role</span><span>Aspiring Data Analyst / Data Science Enthusiast</span></div>
+          <div class="r-row"><span>status</span><span>open_to_work = TRUE</span></div>
+          <div class="rule"></div>
+          <div style="color:#6B7690; margin-top:6px;">1 row returned</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-lower reveal">
+      <div>
+        <h1 class="hero-name">Vivek Kushwaha</h1>
+        <div class="hero-role">Aspiring Data Analyst / Data Science Enthusiast</div>
+        <div class="status-pill">available for opportunities</div>
+      </div>
+      <div class="hero-contact">
+        <span>vivekkushwaha285@gmail.com</span>
+        <span>+91 7828139380</span>
+        <span>Gwalior, Madhya Pradesh, India</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="summary">
+  <div class="wrap">
+    <div class="comment reveal">summary</div>
+    <h2 class="section-title reveal">Professional Summary</h2>
+    <p class="summary-text reveal">
+      <strong>Detail-oriented Computer Science undergraduate</strong> with a strong foundation in Python, SQL, and database management, pursuing opportunities in data analysis and data science. Skilled in data validation, structured problem-solving, and translating raw data into reliable, high-quality outputs — built through hands-on academic projects, self-driven work with the Python data stack (NumPy, pandas, Streamlit), and a background in systematic software testing.
+    </p>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="comment reveal">skills</div>
+    <h2 class="section-title reveal">Key Skills</h2>
+
+    <div class="schema-block reveal">
+      <div class="schema-head">table: data_and_programming</div>
+      <div class="field-row">
+        <span class="field-name">languages</span>
+        <span class="field-value">Python (OOP, lambda functions &amp; functional constructs), C, C++</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">databases</span>
+        <span class="field-value">SQL, MySQL, PyMySQL (Python–MySQL connectivity); relational database design &amp; query optimization</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">data_analysis</span>
+        <span class="field-value">NumPy, pandas — data wrangling, cleaning, and analysis</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">visualization</span>
+        <span class="field-value">Streamlit — building interactive data apps and dashboards</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">data_quality</span>
+        <span class="field-value">Data validation and integrity testing to ensure accuracy and consistency of datasets</span>
+      </div>
+      <div class="tag-row">
+        <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">MySQL</span>
+        <span class="tag">PyMySQL</span><span class="tag">NumPy</span><span class="tag">pandas</span>
+        <span class="tag">Streamlit</span><span class="tag">C</span><span class="tag">C++</span>
+      </div>
+    </div>
+
+    <div class="schema-block reveal">
+      <div class="schema-head">table: analytical_and_qa</div>
+      <div class="field-row">
+        <span class="field-name">testing</span>
+        <span class="field-value">Test case design, root cause analysis, and defect life cycle management — directly transferable to data quality auditing</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">methodologies</span>
+        <span class="field-value">Functional, regression, and sanity testing; basic knowledge of SDLC &amp; STLC</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">mindset</span>
+        <span class="field-value">Strong analytical thinking and attention to detail when working with structured data</span>
+      </div>
+    </div>
+
+    <div class="schema-block reveal">
+      <div class="schema-head">table: soft_skills</div>
+      <div class="field-row">
+        <span class="field-name">communication</span>
+        <span class="field-value">Strong communication and public speaking</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">collaboration</span>
+        <span class="field-value">Team collaboration and technical documentation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="comment reveal">projects</div>
+    <h2 class="section-title reveal">Academic Projects</h2>
+
+    <div class="project-card reveal">
+      <span class="project-tag">SQL · Python · OOP</span>
+      <h3>Database Management System Project</h3>
+      <ul>
+        <li>Designed and implemented a relational database in MySQL with optimized SQL queries for efficient data retrieval.</li>
+        <li>Connected the database to Python using PyMySQL, applying OOP principles to structure the data-access layer.</li>
+        <li>Performed data validation and integrity testing to ensure accuracy and consistency across datasets.</li>
+      </ul>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-tag">Python · pandas · NumPy</span>
+      <h3>Python Automation Script for Data Processing</h3>
+      <ul>
+        <li>Developed Python scripts — using OOP design and lambda functions for concise data transformations — to automate repetitive data processing tasks, improving consistency and turnaround time.</li>
+        <li>Used pandas and NumPy to clean, reshape, and analyze structured data, and validated script output against expected results.</li>
+      </ul>
+    </div>
+
+    <div class="project-card reveal">
+      <span class="project-tag">Streamlit · pandas · NumPy</span>
+      <h3>Interactive Data Dashboard (Streamlit)</h3>
+      <ul>
+        <li>Built an interactive Streamlit web app to visualize and explore datasets processed with pandas and NumPy.</li>
+        <li>Reinforced a data-quality-first workflow by validating displayed results against source data.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="comment reveal">internship &amp; training</div>
+    <h2 class="section-title reveal">Experience</h2>
+
+    <div class="timeline-item reveal">
+      <div class="t-year">2023–2024</div>
+      <div class="t-body">
+        <h3>Android Developer Virtual Intern</h3>
+        <div class="t-org">EduSkills / AICTE Remote</div>
+        <ul>
+          <li>Completed a virtual internship focused on Android application development fundamentals.</li>
+          <li>Gained hands-on experience with mobile app testing, UI/UX validation, and debugging.</li>
+          <li>Learned to identify, document, and analyze bugs and inconsistencies during the development lifecycle.</li>
+          <li>Earned EduSkills certification in Android Development and C++ Programming.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="comment reveal">education</div>
+    <h2 class="section-title reveal">Education</h2>
+
+    <div class="timeline-item reveal">
+      <div class="t-year">2023–Present</div>
+      <div class="t-body">
+        <h3>B.Tech in Computer Science &amp; Engineering</h3>
+        <div class="t-org">Institute of Technology &amp; Management, Gwalior, MP</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="t-year">2022–2023</div>
+      <div class="t-body">
+        <h3>Class XII (PCM)</h3>
+        <div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="t-year">2020–2021</div>
+      <div class="t-body">
+        <h3>Class X</h3>
+        <div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;" class="reveal">
+      <div class="comment">certifications &amp; achievements</div>
+      <div class="cert-list">
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0E9384" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          C++ Programming – EduSkills Certification
+        </div>
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0E9384" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Android Developer Virtual Internship – AICTE / EduSkills
+        </div>
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#0E9384" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Active participant in college technical events and seminars
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;" class="reveal">
+      <div class="comment">languages</div>
+      <div class="lang-row">
+        <div class="lang-item">
+          <div class="lname">Hindi</div>
+          <div class="llevel">Native</div>
+        </div>
+        <div class="lang-item">
+          <div class="lname">English</div>
+          <div class="llevel">Professional Proficiency</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="comment reveal">contact</div>
+    <h2 class="section-title reveal">Let's Connect</h2>
+    <p class="reveal" style="color:#8A93AC; max-width:560px; font-size:15px;">
+      Open to internships and entry-level roles in data analysis and data science. Reach out by email or phone below.
+    </p>
+    <div class="contact-grid reveal">
+      <a class="contact-link" href="mailto:vivekkushwaha285@gmail.com">
+        <span class="clabel">Email</span>
+        <span class="cvalue">vivekkushwaha285@gmail.com</span>
+      </a>
+      <a class="contact-link" href="tel:+917828139380">
+        <span class="clabel">Phone</span>
+        <span class="cvalue">+91 7828139380</span>
+      </a>
+      <a class="contact-link" href="#" onclick="return false;">
+        <span class="clabel">Location</span>
+        <span class="cvalue">Gwalior, Madhya Pradesh, India</span>
+      </a>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Vivek Kushwaha</span>
+      <span>-- end of file --</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Typing effect for hero terminal
+  const query = "SELECT name, role, status FROM candidates WHERE skills @> '{python,sql,pandas}';";
+  const typedEl = document.getElementById('typed-query');
+  const cursorEl = document.getElementById('cursor');
+  const resultEl = document.getElementById('result-table');
+  let i = 0;
+
+  function typeChar(){
+    if(i < query.length){
+      typedEl.textContent += query.charAt(i);
+      i++;
+      setTimeout(typeChar, 18 + Math.random()*22);
+    } else {
+      setTimeout(() => { resultEl.classList.add('show'); }, 350);
+    }
+  }
+  window.addEventListener('DOMContentLoaded', () => setTimeout(typeChar, 500));
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
