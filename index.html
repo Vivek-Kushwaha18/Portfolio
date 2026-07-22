@@ -1,494 +1,613 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vivek Kushwaha · Data Analyst</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    /* ---------- reset & base ---------- */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: #f0f3f0;
-      color: #0a1922;
-      font-family: 'Inter', sans-serif;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
-    }
-    h1,h2,h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.02em; font-weight: 600; }
-    .mono { font-family: 'IBM Plex Mono', monospace; }
-    ::selection { background: #0e9384; color: white; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivek Kushwaha — Aspiring Data Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F2FB;
+    --surface:#FFFFFF;
+    --ink:#201A3D;
+    --ink-soft:#5A5478;
+    --ink-faint:#948FB0;
+    --line:#E1DCF0;
+    --teal:#6C4FE0;
+    --teal-deep:#5238BD;
+    --amber:#F2884B;
+    --teal-tint:#ECE7FB;
+    --amber-tint:#FDEBE0;
+    --radius:3px;
+  }
 
-    /* ---------- scroll progress (glass) ---------- */
-    .scroll-progress {
-      position: fixed; top:0; left:0; height: 4px; width:0%;
-      background: linear-gradient(90deg, #0e9384, #e7a03d, #c44545, #0e9384);
-      background-size: 300% 100%;
-      z-index: 999;
-      animation: shimmer-progress 6s linear infinite;
-      box-shadow: 0 0 16px rgba(14,147,132,0.6);
-      transition: width 0.1s linear;
-    }
-    @keyframes shimmer-progress { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{
+    font-family:'Space Grotesk', sans-serif;
+    margin:0;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  a{color:inherit;}
 
-    /* ---------- layout ---------- */
-    .wrap { max-width: 1000px; margin:0 auto; padding:0 28px; }
-    section { padding: 80px 0; position: relative; }
+  ::selection{background:var(--teal); color:#fff;}
 
-    /* ---------- reveal (stagger + blur) ---------- */
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px) scale(0.97);
-      filter: blur(2px);
-      transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
-      transition-delay: var(--d, 0ms);
-    }
-    .reveal.in-view {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-    .comment {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      color: #0b7a6e;
-      letter-spacing: 0.03em;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .comment::before { content:"//"; color: #8890a0; font-weight: 400; }
-    .section-title {
-      font-size: clamp(28px, 4.5vw, 42px);
-      margin-bottom: 32px;
-      background: linear-gradient(145deg, #0a1922, #0e9384);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
-    }
+  /* ---------- scroll progress bar ---------- */
+  .scroll-progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg, var(--teal), var(--amber));
+    z-index:100;
+    transition:width 0.08s linear;
+  }
 
-    /* ---------- nav (glassmorphism) ---------- */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(240, 243, 240, 0.78);
-      backdrop-filter: blur(18px) saturate(180%);
-      -webkit-backdrop-filter: blur(18px) saturate(180%);
-      border-bottom: 1px solid rgba(180, 195, 185, 0.3);
-    }
-    .nav-inner {
-      max-width: 1000px; margin:0 auto; padding:0 28px;
-      height: 70px; display: flex; align-items: center; justify-content: space-between;
-    }
-    .nav-brand {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 16px; font-weight: 600;
-      color: #0a1922;
-      letter-spacing: -0.3px;
-    }
-    .nav-brand span { color: #0e9384; }
-    .nav-links {
-      display: flex; gap: 32px; list-style: none;
-    }
-    .nav-links a {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12.5px;
-      text-decoration: none;
-      color: #4b5a68;
-      padding: 4px 0;
-      position: relative;
-      transition: color 0.3s;
-      font-weight: 500;
-    }
-    .nav-links a::after {
-      content: '';
-      position: absolute; left:0; bottom:-4px;
-      width: 100%; height: 2.5px;
-      background: linear-gradient(90deg, #0e9384, #c44545);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .nav-links a:hover { color: #0a1922; }
-    .nav-links a:hover::after { transform: scaleX(1); }
-    .nav-links a.active { color: #0e9384; font-weight: 600; }
-    .nav-links a.active::after { transform: scaleX(1); }
-    @media (max-width: 700px) { .nav-links { display: none; } }
+  /* ---------- layout helpers ---------- */
+  .wrap{max-width:920px; margin:0 auto; padding:0 28px;}
+  section{padding:96px 0;}
+  .comment{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--teal-deep);
+    text-transform:lowercase;
+    letter-spacing:0.02em;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .comment::before{content:"--"; color:var(--ink-faint);}
+  .section-title{
+    font-size:clamp(26px,4vw,36px);
+    font-weight:600;
+    margin-bottom:36px;
+  }
 
-    /* ---------- hero terminal (elevated) ---------- */
-    .hero { padding: 60px 0 40px; position: relative; }
-    .terminal {
-      background: #0d1420;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 30px 70px -20px rgba(11, 122, 110, 0.4), 0 0 0 1px rgba(255,255,255,0.03) inset;
-      border: 1px solid #1c2740;
-      transition: box-shadow 0.4s;
-      animation: terminal-enter 0.8s cubic-bezier(0.16,1,0.3,1) both;
-      position: relative;
-      z-index: 2;
-    }
-    @keyframes terminal-enter {
-      0% { opacity: 0; transform: translateY(30px) scale(0.96); filter: blur(4px); }
-      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-    }
-    .terminal-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 20px;
-      background: #111a2c;
-      border-bottom: 1px solid #1c2740;
-    }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
-    .dot.r { background: #e5636b; } .dot.y { background: #e7b34d; } .dot.g { background: #4fbf87; }
-    .terminal-title {
-      margin-left: 10px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: #6b7690;
-      letter-spacing: 0.3px;
-    }
-    .terminal-body {
-      padding: 28px 24px 32px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 14px;
-      color: #c8d0e0;
-      min-height: 180px;
-      background: radial-gradient(ellipse at 20% 30%, #162031, #0b111c);
-    }
-    .prompt { color: #4fbf87; }
-    .qline { color: #7fd6c8; }
-    #typed-query { white-space: pre-wrap; word-break: break-word; }
-    .cursor {
-      display: inline-block; width: 8px; height: 18px;
-      background: #7fd6c8; margin-left: 3px; vertical-align: middle;
-      animation: blink 1s step-end infinite;
-      box-shadow: 0 0 12px #7fd6c8;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
+  /* ---------- reveal on scroll (staggered) ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(26px);
+    transition:opacity 0.7s cubic-bezier(.21,.9,.32,1), transform 0.7s cubic-bezier(.21,.9,.32,1);
+    transition-delay:var(--d, 0ms);
+  }
+  .reveal.in-view{opacity:1; transform:translateY(0);}
 
-    .result-table {
-      margin-top: 20px;
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .result-table.show { opacity: 1; transform: translateY(0); }
-    .result-table .r-head, .result-table .r-row {
-      display: grid;
-      grid-template-columns: 160px 1fr;
-      gap: 20px;
-    }
-    .result-table .r-head { color: #6b7690; padding-bottom: 6px; border-bottom: 1px dashed #253150; }
-    .result-table .r-row {
-      color: #e7eef9;
-      padding: 6px 0;
-      opacity: 0;
-      animation: row-fade 0.5s ease forwards;
-    }
-    .result-table.show .r-row:nth-child(3) { animation-delay: 0.1s; }
-    .result-table.show .r-row:nth-child(4) { animation-delay: 0.25s; }
-    .result-table.show .r-row:nth-child(5) { animation-delay: 0.4s; }
-    @keyframes row-fade { from { opacity:0; transform: translateX(-6px); } to { opacity:1; transform: translateX(0); } }
-    .rule { border-bottom: 1px dashed #253150; margin: 6px 0; }
+  .reveal.slide-left{transform:translateX(-56px);}
+  .reveal.slide-right{transform:translateX(56px);}
+  .reveal.slide-left.in-view,
+  .reveal.slide-right.in-view{transform:translateX(0);}
 
-    .hero-lower {
-      margin-top: 48px;
-      display: flex; justify-content: space-between; align-items: flex-end;
-      gap: 20px; flex-wrap: wrap;
-    }
-    .hero-name {
-      font-size: clamp(44px, 7vw, 72px);
-      font-weight: 700; line-height: 1;
-      background: linear-gradient(135deg, #0a1922 20%, #0e9384 45%, #c44545 70%, #0a1922 90%);
-      background-size: 300% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: gradient-shift 10s ease-in-out infinite;
-    }
-    @keyframes gradient-shift { 0% { background-position: 0% 0; } 50% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
-    .hero-role {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 16px;
-      color: #0b7a6e;
-      margin-top: 6px;
-      font-weight: 500;
-    }
-    .hero-contact {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      color: #4b5a68;
-      text-align: right;
-      line-height: 1.8;
-    }
-    @media (max-width: 640px) { .hero-contact { text-align: left; } }
+  @media (max-width:640px){
+    .reveal.slide-left, .reveal.slide-right{transform:translateY(26px);}
+    .reveal.slide-left.in-view, .reveal.slide-right.in-view{transform:translateY(0);}
+  }
 
-    .status-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      background: linear-gradient(135deg, #e4f3f0, #d4e8e3);
-      border: 1px solid #b9ddd5;
-      padding: 6px 16px;
-      border-radius: 40px;
-      color: #0b7a6e;
-      margin-top: 18px;
-      backdrop-filter: blur(4px);
-      transition: all 0.3s;
-    }
-    .status-pill:hover { transform: scale(1.03); box-shadow: 0 8px 20px -12px rgba(14,147,132,0.5); }
-    .status-pill::before {
-      content: ''; width: 7px; height: 7px; border-radius: 50%;
-      background: #0e9384;
-      box-shadow: 0 0 0 3px #e4f3f0;
-      animation: pulse-ring 2.2s ease-in-out infinite;
-    }
-    @keyframes pulse-ring { 0%,100% { box-shadow: 0 0 0 3px #e4f3f0; } 50% { box-shadow: 0 0 0 8px #c9e7e1; } }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
 
-    /* ---------- cards & blocks ---------- */
-    .schema-block {
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(4px);
-      border: 1px solid #dce0db;
-      border-radius: 14px;
-      padding: 26px 30px;
-      margin-bottom: 20px;
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    }
-    .schema-block:hover {
-      border-color: #0e9384;
-      box-shadow: 0 20px 40px -20px rgba(14,147,132,0.3);
-      transform: translateY(-6px) scale(1.005);
-      background: white;
-    }
-    .schema-head {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 12px;
-      color: #0b7a6e;
-      text-transform: lowercase;
-      letter-spacing: 0.04em;
-      border-bottom: 1px solid #dce0db;
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-    }
-    .field-row {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 16px;
-      padding: 8px 0;
-      font-size: 14.5px;
-      border-radius: 6px;
-      transition: all 0.25s;
-    }
-    .field-row:hover { background: #eaf6f3; padding-left: 10px; }
-    .field-row + .field-row { border-top: 1px dashed #dce0db; }
-    .field-name {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      font-weight: 600;
-      color: #0a1922;
-    }
-    .field-value { color: #3d5260; }
-    @media (max-width: 640px) { .field-row { grid-template-columns: 1fr; } }
+  /* ---------- section title wipe-reveal ---------- */
+  .title-wipe{
+    position:relative;
+    display:inline-block;
+    overflow:hidden;
+    padding:0 3px;
+  }
+  .wipe-text{
+    display:inline-block;
+    opacity:0;
+    transition:opacity 0.01s linear 0.42s;
+  }
+  .title-wipe.in-view .wipe-text{opacity:1;}
+  .title-wipe::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(100deg, var(--teal-deep), var(--teal));
+    transform:scaleX(0);
+    transform-origin:left;
+  }
+  .title-wipe.in-view::after{
+    animation:wipe-sweep 0.85s cubic-bezier(.65,0,.35,1) forwards;
+  }
+  @keyframes wipe-sweep{
+    0%{transform:scaleX(0); transform-origin:left;}
+    48%{transform:scaleX(1); transform-origin:left;}
+    52%{transform:scaleX(1); transform-origin:right;}
+    100%{transform:scaleX(0); transform-origin:right;}
+  }
 
-    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .tag {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11.5px;
-      padding: 6px 16px;
-      border-radius: 40px;
-      background: linear-gradient(135deg, #e4f3f0, #d4e8e3);
-      color: #0b7a6e;
-      border: 1px solid #c9e7e1;
-      transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-      opacity: 0;
-      transform: translateY(12px) scale(0.9);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    }
-    .tag.tag-in {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      animation: tag-pop 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-    @keyframes tag-pop { 0% { opacity:0; transform: translateY(12px) scale(0.9); } 100% { opacity:1; transform: translateY(0) scale(1); } }
-    .tag:hover {
-      transform: translateY(-4px) scale(1.06);
-      background: linear-gradient(135deg, #cdebe5, #b8e0d8);
-      box-shadow: 0 12px 24px -12px rgba(14,147,132,0.5);
-      border-color: #0e9384;
-    }
+  /* ---------- side scroll-spy dots ---------- */
+  .side-dots{
+    position:fixed; right:26px; top:50%;
+    transform:translateY(-50%);
+    display:flex; flex-direction:column; gap:16px;
+    z-index:40;
+  }
+  .side-dots a{
+    position:relative;
+    width:8px; height:8px; border-radius:50%;
+    background:var(--ink-faint);
+    opacity:0.45;
+    transition:opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+  }
+  .side-dots a::after{
+    content:attr(data-label);
+    position:absolute; right:18px; top:50%;
+    transform:translateY(-50%) translateX(6px);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    white-space:nowrap;
+    color:var(--ink-soft);
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:3px 9px;
+    border-radius:4px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.25s ease, transform 0.25s ease;
+  }
+  .side-dots a:hover::after{opacity:1; transform:translateY(-50%) translateX(0);}
+  .side-dots a:hover{transform:scale(1.3); opacity:1;}
+  .side-dots a.active{
+    background:var(--teal-deep);
+    opacity:1;
+    transform:scale(1.5);
+  }
+  @media (max-width:900px){ .side-dots{display:none;} }
 
-    /* project cards */
-    .project-card {
-      background: rgba(255,255,255,0.8);
-      backdrop-filter: blur(4px);
-      border: 1px solid #dce0db;
-      border-radius: 16px;
-      padding: 28px 32px;
-      margin-bottom: 20px;
-      transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    }
-    .project-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(14,147,132,0.12), transparent 70%);
-      opacity: 0;
-      transition: opacity 0.6s;
-      pointer-events: none;
-    }
-    .project-card:hover::before { opacity: 1; }
-    .project-card:hover {
-      border-color: #0e9384;
-      box-shadow: 0 24px 50px -24px rgba(11,122,110,0.3);
-      transform: translateY(-8px) scale(1.008);
-      background: white;
-    }
-    .project-tag {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      color: #c44545;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-      display: block;
-      font-weight: 600;
-    }
-    .project-card h3 { font-size: 20px; margin-bottom: 12px; font-weight: 600; color: #0a1922; }
-    .project-card ul { padding-left: 20px; color: #3d5260; font-size: 14.5px; }
-    .project-card li { margin-bottom: 6px; transition: color 0.2s; }
-    .project-card li::marker { color: #0e9384; }
-    .project-card li:hover { color: #0a1922; }
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(245,242,251,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    position:relative;
+    max-width:920px; margin:0 auto; padding:0 28px;
+    height:60px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-brand{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px; font-weight:600; color:var(--ink);
+  }
+  .nav-brand span{color:var(--teal-deep);}
+  .nav-links{
+    position:relative;
+    display:flex; gap:26px; list-style:none; margin:0; padding:0;
+  }
+  .nav-links a{
+    position:relative;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-decoration:none;
+    color:var(--ink-soft);
+    padding:4px 2px;
+    transition:color 0.3s ease;
+  }
+  .nav-links a:hover{color:var(--teal-deep);}
+  .nav-links a.active{color:var(--teal-deep);}
+  .nav-indicator{
+    position:absolute; bottom:-3px; left:0;
+    height:2px; width:0;
+    background:linear-gradient(90deg, var(--teal), var(--teal-deep));
+    border-radius:2px;
+    transition:transform 0.45s cubic-bezier(.65,0,.35,1), width 0.45s cubic-bezier(.65,0,.35,1), opacity 0.3s ease;
+    opacity:0;
+  }
+  .nav-indicator.ready{opacity:1;}
+  @media (max-width:640px){ .nav-links{display:none;} }
 
-    /* timeline */
-    .timeline-item {
-      display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 24px;
-      padding: 22px 0;
-      border-top: 1px solid #dce0db;
-      position: relative;
-      transition: all 0.3s;
-    }
-    .timeline-item:last-child { border-bottom: 1px solid #dce0db; }
-    .timeline-item::before {
-      content: '';
-      position: absolute; left: -12px; top: 28px;
-      width: 8px; height: 8px; border-radius: 50%;
-      background: linear-gradient(135deg, #0e9384, #c44545);
-      opacity: 0;
-      transform: scale(0);
-      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-      box-shadow: 0 0 0 4px #e4f3f0;
-    }
-    .timeline-item:hover { padding-left: 8px; }
-    .timeline-item:hover::before { opacity: 1; transform: scale(1); }
-    .t-year {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      color: #0b7a6e;
-      font-weight: 600;
-      padding-top: 2px;
-    }
-    .t-body h3 { font-size: 17px; font-weight: 600; color: #0a1922; }
-    .t-org { font-size: 14px; color: #4b5a68; margin-bottom: 8px; }
-    .t-body ul { padding-left: 20px; color: #3d5260; font-size: 14px; }
-    .t-body li { margin-bottom: 4px; }
-    @media (max-width: 640px) { .timeline-item { grid-template-columns: 1fr; } .t-year { padding-top:0; } }
+  /* ---------- hero ---------- */
+  .hero{
+    padding:72px 0 60px;
+    position:relative;
+    overflow:hidden;
+  }
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(70px);
+    opacity:0.28;
+    z-index:0;
+    pointer-events:none;
+  }
+  .blob-a{
+    width:360px; height:360px;
+    background:var(--teal);
+    top:-140px; right:-100px;
+    animation:float-a 15s ease-in-out infinite;
+  }
+  .blob-b{
+    width:280px; height:280px;
+    background:var(--amber);
+    bottom:-120px; left:-70px;
+    animation:float-b 19s ease-in-out infinite;
+  }
+  @keyframes float-a{
+    0%, 100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(-34px,42px) scale(1.12);}
+  }
+  @keyframes float-b{
+    0%, 100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(28px,-38px) scale(1.16);}
+  }
+  .hero > .wrap{position:relative; z-index:1;}
+  .terminal{
+    background:#170F29;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 20px 50px -20px rgba(32,26,61,0.35);
+    border:1px solid #2C1F52;
+    position:relative;
+    animation:terminal-in 0.6s cubic-bezier(.21,.9,.32,1) both;
+  }
+  @keyframes terminal-in{
+    from{opacity:0; transform:translateY(-14px) scale(0.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+  .terminal-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:11px 16px;
+    background:#1E1438;
+    border-bottom:1px solid #2C1F52;
+  }
+  .dot{width:9px; height:9px; border-radius:50%;}
+  .dot.r{background:#E5636B;} .dot.y{background:#E7B34D;} .dot.g{background:#4FBF87;}
+  .terminal-title{
+    margin-left:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:#7A6FA0;
+  }
+  .terminal-body{
+    padding:22px 20px 26px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:#C7BEE8;
+    min-height:150px;
+  }
+  .terminal-body .prompt{color:#4FBF87;}
+  .terminal-body .qline{color:#C9B8F5;}
+  #typed-query{white-space:pre-wrap; word-break:break-word;}
+  .cursor{
+    display:inline-block; width:7px; height:15px;
+    background:#C9B8F5; margin-left:2px; vertical-align:middle;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .result-table{
+    margin-top:16px;
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity 0.5s ease, transform 0.5s ease;
+  }
+  .result-table.show{opacity:1; transform:translateY(0);}
+  .result-table .r-head, .result-table .r-row{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:14px;
+  }
+  .result-table .r-head{color:#7A6FA0; padding-bottom:6px;}
+  .result-table .r-row{
+    color:#F1ECFC; padding:2px 0;
+    opacity:0;
+    animation:row-in 0.4s ease forwards;
+  }
+  .result-table.show .r-row:nth-child(3){animation-delay:0.05s;}
+  .result-table.show .r-row:nth-child(4){animation-delay:0.15s;}
+  .result-table.show .r-row:nth-child(5){animation-delay:0.25s;}
+  @keyframes row-in{
+    from{opacity:0; transform:translateX(-6px);}
+    to{opacity:1; transform:translateX(0);}
+  }
+  .rule{border-bottom:1px dashed #3A2A63; margin:6px 0 8px;}
 
-    /* certs */
-    .cert-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 0;
-      border-top: 1px solid #dce0db;
-      font-size: 14.5px;
-      color: #3d5260;
-      transition: all 0.3s;
-    }
-    .cert-item:hover { padding-left: 10px; color: #0a1922; }
-    .cert-list .cert-item:last-child { border-bottom: 1px solid #dce0db; }
-    .check {
-      width: 22px; height: 22px; flex: none;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #e4f3f0, #c9e7e1);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.3s;
-    }
-    .cert-item:hover .check { transform: scale(1.1); }
-    .check svg path { stroke-dasharray: 14; stroke-dashoffset: 14; }
-    .check.draw svg path { animation: draw-check 0.6s ease forwards; }
-    @keyframes draw-check { to { stroke-dashoffset: 0; } }
+  .hero-lower{
+    margin-top:52px;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;
+  }
+  .hero-name{
+    font-size:clamp(36px,6vw,58px);
+    font-weight:700; line-height:1.04;
+    color:var(--ink);
+    perspective:500px;
+  }
+  .hero-name .word{display:inline-block; white-space:nowrap;}
+  .hero-name .word.accent{color:var(--teal-deep);}
+  .hero-name .letter{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(28px) rotateX(-40deg);
+    transform-origin:bottom;
+    animation:letter-in 0.65s cubic-bezier(.21,.9,.32,1) forwards;
+  }
+  @keyframes letter-in{
+    to{opacity:1; transform:translateY(0) rotateX(0);}
+  }
+  .hero-role{
+    margin-top:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    color:var(--teal-deep);
+  }
+  .hero-contact{
+    display:flex; flex-direction:column; gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  @media (max-width:640px){ .hero-contact{text-align:left;} }
 
-    .lang-row { display: flex; gap: 48px; flex-wrap: wrap; }
-    .lang-item .lname { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; color: #0a1922; }
-    .lang-item .llevel { font-size: 13.5px; color: #4b5a68; }
+  .status-pill{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--teal-deep);
+    background:var(--teal-tint);
+    border:1px solid #D9CFF5;
+    padding:5px 11px;
+    border-radius:20px;
+    margin-top:18px;
+  }
+  .status-pill::before{
+    content:""; width:6px; height:6px; border-radius:50%; background:var(--teal);
+    box-shadow:0 0 0 3px var(--teal-tint);
+    animation:pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%, 100%{box-shadow:0 0 0 3px var(--teal-tint);}
+    50%{box-shadow:0 0 0 6px var(--teal-tint);}
+  }
 
-    /* footer */
-    footer {
-      background: #0a1922;
-      color: #b9c2d6;
-      padding: 70px 0 40px;
-      border-top: 1px solid #1c2740;
-      position: relative;
-    }
-    footer .comment { color: #7fd6c8; }
-    footer .comment::before { color: #4a5674; }
-    footer h2 { color: white; }
-    .contact-grid {
-      display: flex; gap: 48px; flex-wrap: wrap;
-      margin-top: 28px;
-    }
-    .contact-link {
-      text-decoration: none; display: flex; flex-direction: column; gap: 4px;
-    }
-    .contact-link .clabel {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px; color: #5c6886; text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .contact-link .cvalue {
-      font-size: 16px; color: #e7eef9;
-      border-bottom: 1px solid transparent;
-      transition: all 0.3s;
-      display: inline-block;
-    }
-    .contact-link:hover .cvalue { color: #7fd6c8; border-color: #7fd6c8; transform: translateX(4px); }
-    .foot-bottom {
-      margin-top: 56px; padding-top: 24px;
-      border-top: 1px solid #1c2740;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11.5px; color: #4a5674;
-      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-    }
+  /* ---------- summary ---------- */
+  .summary-text{
+    font-size:17px;
+    color:var(--ink-soft);
+    max-width:760px;
+  }
+  .summary-text strong{color:var(--ink); font-weight:600;}
 
-    /* ---------- particle canvas ---------- */
-    #particles-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
+  /* ---------- skills ---------- */
+  .schema-block{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:24px 26px;
+    margin-bottom:18px;
+    transition:border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+  .schema-block:hover{
+    border-color:#CFC2F0;
+    box-shadow:0 10px 30px -20px rgba(108,79,224,0.4);
+    transform:translateY(-3px);
+  }
+  .schema-head{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--teal-deep);
+    text-transform:lowercase;
+    margin-bottom:16px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--line);
+  }
+  .field-row{
+    display:grid;
+    grid-template-columns:190px 1fr;
+    gap:16px;
+    padding:8px 0;
+    font-size:14.5px;
+    border-radius:4px;
+    transition:background 0.2s ease, padding-left 0.2s ease;
+  }
+  .field-row:hover{background:var(--teal-tint); padding-left:8px;}
+  .field-row + .field-row{border-top:1px dashed var(--line);}
+  .field-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink);
+    font-weight:600;
+  }
+  .field-value{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .field-row{grid-template-columns:1fr;}
+  }
+  .tag-row{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;
+    perspective:600px;
+  }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:20px;
+    background:var(--teal-tint);
+    color:var(--teal-deep);
+    border:1px solid #D9CFF5;
+    opacity:0;
+    transform:rotateX(-85deg);
+    transform-origin:bottom center;
+    transition:background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .tag.flip-in{
+    animation:tag-flip 0.55s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes tag-flip{
+    to{opacity:1; transform:rotateX(0deg);}
+  }
+  .tag:hover{transform:translateY(-3px) scale(1.06); background:#E3DAFA; box-shadow:0 8px 16px -10px rgba(108,79,224,0.5);}
+  @media (prefers-reduced-motion: reduce){
+    .tag{opacity:1; transform:none;}
+  }
 
-    /* responsiveness */
-    @media (max-width: 640px) {
-      .hero-lower { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+  /* ---------- projects ---------- */
+  .project-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:26px 28px;
+    margin-bottom:18px;
+    position:relative;
+    transition:transform 0.3s cubic-bezier(.21,.9,.32,1), box-shadow 0.3s ease, border-color 0.3s ease;
+    overflow:hidden;
+  }
+  .project-card::before{
+    content:"";
+    position:absolute; top:0; left:-100%;
+    width:100%; height:3px;
+    background:linear-gradient(90deg, var(--teal-deep), var(--amber));
+    transition:left 0.5s cubic-bezier(.65,0,.35,1);
+  }
+  .project-card:hover::before{left:0;}
+  .project-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 40px -22px rgba(32,26,61,0.28);
+    border-color:#CFC2F0;
+  }
+  .project-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--amber);
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    margin-bottom:8px;
+    display:block;
+  }
+  .project-card h3{font-size:19px; font-weight:600; margin-bottom:12px;}
+  .project-card ul{margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
+  .project-card li{margin-bottom:6px; transition:color 0.2s ease;}
+  .project-card li::marker{color:var(--teal);}
+  .project-card li:hover{color:var(--ink);}
+
+  /* ---------- timeline (internship + education) ---------- */
+  .timeline{position:relative;}
+  .timeline::before{
+    content:"";
+    position:absolute; left:-18px; top:6px; bottom:6px;
+    width:2px;
+    background:linear-gradient(to bottom, var(--teal), var(--line) 85%);
+    transform-origin:top;
+    transform:scaleY(0);
+    transition:transform 1.3s cubic-bezier(.16,1,.3,1);
+  }
+  .timeline.line-in::before{transform:scaleY(1);}
+  @media (max-width:640px){ .timeline::before{display:none;} }
+  .timeline-item{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:22px;
+    padding:20px 0;
+    border-top:1px solid var(--line);
+    position:relative;
+    transition:padding-left 0.25s ease;
+  }
+  .timeline-item:last-child{border-bottom:1px solid var(--line);}
+  .timeline-item::before{
+    content:"";
+    position:absolute; left:-12px; top:26px;
+    width:7px; height:7px; border-radius:50%;
+    background:var(--teal);
+    opacity:0;
+    transform:scale(0);
+    transition:opacity 0.3s ease, transform 0.3s ease;
+  }
+  .timeline-item:hover{padding-left:6px;}
+  .timeline-item:hover::before{opacity:1; transform:scale(1);}
+  .t-year{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--teal-deep);
+    padding-top:2px;
+  }
+  .t-body h3{font-size:16.5px; font-weight:600; margin-bottom:4px;}
+  .t-org{font-size:13.5px; color:var(--ink-faint); margin-bottom:10px;}
+  .t-body ul{margin:0; padding-left:18px; color:var(--ink-soft); font-size:14.5px;}
+  .t-body li{margin-bottom:5px;}
+  @media (max-width:640px){ .timeline-item{grid-template-columns:1fr;} .t-year{padding-top:0;} }
+
+  /* ---------- certifications ---------- */
+  .cert-list{display:flex; flex-direction:column; gap:0;}
+  .cert-item{
+    display:flex; align-items:center; gap:12px;
+    padding:14px 0;
+    border-top:1px solid var(--line);
+    font-size:14.5px;
+    color:var(--ink-soft);
+    transition:padding-left 0.2s ease, color 0.2s ease;
+  }
+  .cert-item:hover{padding-left:6px; color:var(--ink);}
+  .cert-list .cert-item:last-child{border-bottom:1px solid var(--line);}
+  .check{
+    width:18px; height:18px; flex:none;
+    border-radius:50%;
+    background:var(--teal-tint);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .check svg path{
+    stroke-dasharray:14;
+    stroke-dashoffset:14;
+  }
+  .check.draw svg path{
+    animation:draw-check 0.5s ease forwards;
+  }
+  @keyframes draw-check{ to{stroke-dashoffset:0;} }
+
+  /* ---------- languages ---------- */
+  .lang-row{display:flex; gap:40px; flex-wrap:wrap;}
+  .lang-item .lname{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink); font-weight:600;}
+  .lang-item .llevel{font-size:13.5px; color:var(--ink-faint); margin-top:3px;}
+
+  /* ---------- footer / contact ---------- */
+  footer{
+    background:#170F29;
+    color:#C7BEE8;
+    padding:70px 0 40px;
+  }
+  footer .comment{color:#C9B8F5;}
+  footer .comment::before{color:#6F5F98;}
+  footer h2{color:#fff;}
+  .contact-grid{
+    display:flex; gap:40px; flex-wrap:wrap;
+    margin-top:28px;
+  }
+  .contact-link{
+    display:flex; flex-direction:column; gap:6px;
+    text-decoration:none;
+  }
+  .contact-link .clabel{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; color:#8478A8; text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .contact-link .cvalue{
+    font-size:15.5px; color:#F1ECFC;
+    border-bottom:1px solid transparent;
+    transition:border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    display:inline-block;
+  }
+  .contact-link:hover .cvalue{color:#C9B8F5; border-color:#C9B8F5; transform:translateX(3px);}
+  .foot-bottom{
+    margin-top:56px; padding-top:24px;
+    border-top:1px solid #2C1F52;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; color:#6F5F98;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+</style>
 </head>
 <body>
-
-<!-- Particle canvas -->
-<canvas id="particles-canvas"></canvas>
 
 <div class="scroll-progress" id="scroll-progress"></div>
 
@@ -503,10 +622,22 @@
       <li><a href="#education" data-nav>education</a></li>
       <li><a href="#contact" data-nav>contact</a></li>
     </ul>
+    <span class="nav-indicator" id="nav-indicator"></span>
   </div>
 </nav>
 
+<nav class="side-dots" aria-label="Section navigation">
+  <a href="#summary" data-dot data-label="Summary"></a>
+  <a href="#skills" data-dot data-label="Skills"></a>
+  <a href="#projects" data-dot data-label="Projects"></a>
+  <a href="#experience" data-dot data-label="Experience"></a>
+  <a href="#education" data-dot data-label="Education"></a>
+  <a href="#contact" data-dot data-label="Contact"></a>
+</nav>
+
 <header class="hero">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
   <div class="wrap">
     <div class="terminal">
       <div class="terminal-bar">
@@ -514,16 +645,16 @@
         <span class="terminal-title">candidates.sql — vivek_kushwaha</span>
       </div>
       <div class="terminal-body">
-        <span class="prompt">$</span> <span class="qline" id="typed-query"></span><span class="cursor" id="cursor"></span>
+<span class="prompt">$</span> <span class="qline" id="typed-query"></span><span class="cursor" id="cursor"></span>
         <div class="result-table" id="result-table">
           <div class="rule"></div>
           <div class="r-head"><span>column</span><span>value</span></div>
           <div class="rule"></div>
           <div class="r-row"><span>name</span><span>Vivek Kushwaha</span></div>
-          <div class="r-row"><span>role</span><span>Aspiring Data Analyst · Data Science</span></div>
+          <div class="r-row"><span>role</span><span>Aspiring Data Analyst / Data Science Enthusiast</span></div>
           <div class="r-row"><span>status</span><span>open_to_work = TRUE</span></div>
           <div class="rule"></div>
-          <div style="color:#6b7690; margin-top:8px; font-size:12px;">1 row returned</div>
+          <div style="color:#7A6FA0; margin-top:6px;">1 row returned</div>
         </div>
       </div>
     </div>
@@ -537,7 +668,7 @@
       <div class="hero-contact">
         <span>vivekkushwaha285@gmail.com</span>
         <span>+91 7828139380</span>
-        <span>Gwalior, Madhya Pradesh</span>
+        <span>Gwalior, Madhya Pradesh, India</span>
       </div>
     </div>
   </div>
@@ -546,8 +677,8 @@
 <section id="summary">
   <div class="wrap">
     <div class="comment reveal">summary</div>
-    <h2 class="section-title reveal">Professional Summary</h2>
-    <p class="summary-text reveal" style="font-size:17.5px; color:#2e384b; max-width:780px; line-height:1.7;">
+    <h2 class="section-title title-wipe"><span class="wipe-text">Professional Summary</span></h2>
+    <p class="summary-text reveal">
       <strong>Detail-oriented Computer Science undergraduate</strong> with a strong foundation in Python, SQL, and database management, pursuing opportunities in data analysis and data science. Skilled in data validation, structured problem-solving, and translating raw data into reliable, high-quality outputs — built through hands-on academic projects, self-driven work with the Python data stack (NumPy, pandas, Streamlit), and a background in systematic software testing.
     </p>
   </div>
@@ -556,15 +687,30 @@
 <section id="skills">
   <div class="wrap">
     <div class="comment reveal">skills</div>
-    <h2 class="section-title reveal">Key Skills</h2>
+    <h2 class="section-title title-wipe"><span class="wipe-text">Key Skills</span></h2>
 
-    <div class="schema-block reveal">
+    <div class="schema-block reveal slide-left">
       <div class="schema-head">table: data_and_programming</div>
-      <div class="field-row"><span class="field-name">languages</span><span class="field-value">Python (OOP, lambda), C, C++</span></div>
-      <div class="field-row"><span class="field-name">databases</span><span class="field-value">SQL, MySQL, PyMySQL · relational design & query optimization</span></div>
-      <div class="field-row"><span class="field-name">data_analysis</span><span class="field-value">NumPy, pandas — wrangling, cleaning, analysis</span></div>
-      <div class="field-row"><span class="field-name">visualization</span><span class="field-value">Streamlit — interactive dashboards</span></div>
-      <div class="field-row"><span class="field-name">data_quality</span><span class="field-value">validation & integrity testing</span></div>
+      <div class="field-row">
+        <span class="field-name">languages</span>
+        <span class="field-value">Python (OOP, lambda functions &amp; functional constructs), C, C++</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">databases</span>
+        <span class="field-value">SQL, MySQL, PyMySQL (Python–MySQL connectivity); relational database design &amp; query optimization</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">data_analysis</span>
+        <span class="field-value">NumPy, pandas — data wrangling, cleaning, and analysis</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">visualization</span>
+        <span class="field-value">Streamlit — building interactive data apps and dashboards</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">data_quality</span>
+        <span class="field-value">Data validation and integrity testing to ensure accuracy and consistency of datasets</span>
+      </div>
       <div class="tag-row" data-tag-row>
         <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">MySQL</span>
         <span class="tag">PyMySQL</span><span class="tag">NumPy</span><span class="tag">pandas</span>
@@ -572,17 +718,32 @@
       </div>
     </div>
 
-    <div class="schema-block reveal">
+    <div class="schema-block reveal slide-left">
       <div class="schema-head">table: analytical_and_qa</div>
-      <div class="field-row"><span class="field-name">testing</span><span class="field-value">Test case design, root cause analysis, defect lifecycle — transferable to data quality auditing</span></div>
-      <div class="field-row"><span class="field-name">methodologies</span><span class="field-value">Functional, regression, sanity testing; SDLC & STLC</span></div>
-      <div class="field-row"><span class="field-name">mindset</span><span class="field-value">Analytical thinking, attention to detail</span></div>
+      <div class="field-row">
+        <span class="field-name">testing</span>
+        <span class="field-value">Test case design, root cause analysis, and defect life cycle management — directly transferable to data quality auditing</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">methodologies</span>
+        <span class="field-value">Functional, regression, and sanity testing; basic knowledge of SDLC &amp; STLC</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">mindset</span>
+        <span class="field-value">Strong analytical thinking and attention to detail when working with structured data</span>
+      </div>
     </div>
 
-    <div class="schema-block reveal">
+    <div class="schema-block reveal slide-left">
       <div class="schema-head">table: soft_skills</div>
-      <div class="field-row"><span class="field-name">communication</span><span class="field-value">Strong communication & public speaking</span></div>
-      <div class="field-row"><span class="field-name">collaboration</span><span class="field-value">Team collaboration & technical documentation</span></div>
+      <div class="field-row">
+        <span class="field-name">communication</span>
+        <span class="field-value">Strong communication and public speaking</span>
+      </div>
+      <div class="field-row">
+        <span class="field-name">collaboration</span>
+        <span class="field-value">Team collaboration and technical documentation</span>
+      </div>
     </div>
   </div>
 </section>
@@ -590,9 +751,9 @@
 <section id="projects">
   <div class="wrap">
     <div class="comment reveal">projects</div>
-    <h2 class="section-title reveal">Academic Projects</h2>
+    <h2 class="section-title title-wipe"><span class="wipe-text">Academic Projects</span></h2>
 
-    <div class="project-card reveal" data-tilt>
+    <div class="project-card reveal slide-right">
       <span class="project-tag">SQL · Python · OOP</span>
       <h3>Database Management System Project</h3>
       <ul>
@@ -602,7 +763,7 @@
       </ul>
     </div>
 
-    <div class="project-card reveal" data-tilt>
+    <div class="project-card reveal slide-left">
       <span class="project-tag">Python · pandas · NumPy</span>
       <h3>Python Automation Script for Data Processing</h3>
       <ul>
@@ -611,7 +772,7 @@
       </ul>
     </div>
 
-    <div class="project-card reveal" data-tilt>
+    <div class="project-card reveal slide-right">
       <span class="project-tag">Streamlit · pandas · NumPy</span>
       <h3>Interactive Data Dashboard (Streamlit)</h3>
       <ul>
@@ -624,20 +785,22 @@
 
 <section id="experience">
   <div class="wrap">
-    <div class="comment reveal">internship & training</div>
-    <h2 class="section-title reveal">Experience</h2>
+    <div class="comment reveal">internship &amp; training</div>
+    <h2 class="section-title title-wipe"><span class="wipe-text">Experience</span></h2>
 
-    <div class="timeline-item reveal">
-      <div class="t-year">2023–2024</div>
-      <div class="t-body">
-        <h3>Android Developer Virtual Intern</h3>
-        <div class="t-org">EduSkills / AICTE · Remote</div>
-        <ul>
-          <li>Completed virtual internship focused on Android application development fundamentals.</li>
-          <li>Hands-on experience with mobile app testing, UI/UX validation, and debugging.</li>
-          <li>Learned to identify, document, and analyze bugs and inconsistencies during development lifecycle.</li>
-          <li>Earned EduSkills certification in Android Development and C++ Programming.</li>
-        </ul>
+    <div class="timeline" data-timeline>
+      <div class="timeline-item reveal slide-left">
+        <div class="t-year">2023–2024</div>
+        <div class="t-body">
+          <h3>Android Developer Virtual Intern</h3>
+          <div class="t-org">EduSkills / AICTE Remote</div>
+          <ul>
+            <li>Completed a virtual internship focused on Android application development fundamentals.</li>
+            <li>Gained hands-on experience with mobile app testing, UI/UX validation, and debugging.</li>
+            <li>Learned to identify, document, and analyze bugs and inconsistencies during the development lifecycle.</li>
+            <li>Earned EduSkills certification in Android Development and C++ Programming.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -646,13 +809,280 @@
 <section id="education">
   <div class="wrap">
     <div class="comment reveal">education</div>
-    <h2 class="section-title reveal">Education</h2>
+    <h2 class="section-title title-wipe"><span class="wipe-text">Education</span></h2>
 
-    <div class="timeline-item reveal"><div class="t-year">2023–Present</div><div class="t-body"><h3>B.Tech in Computer Science & Engineering</h3><div class="t-org">Institute of Technology & Management, Gwalior, MP</div></div></div>
-    <div class="timeline-item reveal"><div class="t-year">2022–2023</div><div class="t-body"><h3>Class XII (PCM)</h3><div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div></div></div>
-    <div class="timeline-item reveal"><div class="t-year">2020–2021</div><div class="t-body"><h3>Class X</h3><div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div></div></div>
+    <div class="timeline" data-timeline>
+      <div class="timeline-item reveal slide-left">
+        <div class="t-year">2023–Present</div>
+        <div class="t-body">
+          <h3>B.Tech in Computer Science &amp; Engineering</h3>
+          <div class="t-org">Institute of Technology &amp; Management, Gwalior, MP</div>
+        </div>
+      </div>
+      <div class="timeline-item reveal slide-left">
+        <div class="t-year">2022–2023</div>
+        <div class="t-body">
+          <h3>Class XII (PCM)</h3>
+          <div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div>
+        </div>
+      </div>
+      <div class="timeline-item reveal slide-left">
+        <div class="t-year">2020–2021</div>
+        <div class="t-body">
+          <h3>Class X</h3>
+          <div class="t-org">B.K. Convent H.S. School, Baroni, Datia, MP</div>
+        </div>
+      </div>
+    </div>
 
     <div style="margin-top:56px;" class="reveal">
-      <div class="comment">certifications & achievements</div>
+      <div class="comment">certifications &amp; achievements</div>
       <div class="cert-list">
-        <div class="cert
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#6C4FE0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          C++ Programming – EduSkills Certification
+        </div>
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#6C4FE0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Android Developer Virtual Internship – AICTE / EduSkills
+        </div>
+        <div class="cert-item">
+          <span class="check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#6C4FE0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          Active participant in college technical events and seminars
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;" class="reveal">
+      <div class="comment">languages</div>
+      <div class="lang-row">
+        <div class="lang-item">
+          <div class="lname">Hindi</div>
+          <div class="llevel">Native</div>
+        </div>
+        <div class="lang-item">
+          <div class="lname">English</div>
+          <div class="llevel">Professional Proficiency</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="comment reveal">contact</div>
+    <h2 class="section-title title-wipe"><span class="wipe-text">Let's Connect</span></h2>
+    <p class="reveal" style="color:#A79FC4; max-width:560px; font-size:15px;">
+      Open to internships and entry-level roles in data analysis and data science. Reach out by email or phone below.
+    </p>
+    <div class="contact-grid reveal">
+      <a class="contact-link" href="mailto:vivekkushwaha285@gmail.com">
+        <span class="clabel">Email</span>
+        <span class="cvalue">vivekkushwaha285@gmail.com</span>
+      </a>
+      <a class="contact-link" href="tel:+917828139380">
+        <span class="clabel">Phone</span>
+        <span class="cvalue">+91 7828139380</span>
+      </a>
+      <a class="contact-link" href="#" onclick="return false;">
+        <span class="clabel">Location</span>
+        <span class="cvalue">Gwalior, Madhya Pradesh, India</span>
+      </a>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Vivek Kushwaha</span>
+      <span>-- end of file --</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Typing effect for hero terminal
+  const query = "SELECT name, role, status FROM candidates WHERE skills @> '{python,sql,pandas}';";
+  const typedEl = document.getElementById('typed-query');
+  const resultEl = document.getElementById('result-table');
+  let i = 0;
+
+  function typeChar(){
+    if(i < query.length){
+      typedEl.textContent += query.charAt(i);
+      i++;
+      setTimeout(typeChar, 18 + Math.random()*22);
+    } else {
+      setTimeout(() => { resultEl.classList.add('show'); }, 350);
+    }
+  }
+  if(reduceMotion){
+    typedEl.textContent = query;
+    resultEl.classList.add('show');
+  } else {
+    window.addEventListener('DOMContentLoaded', () => setTimeout(typeChar, 500));
+  }
+
+  // Stagger delay assignment: within each section, give successive .reveal
+  // elements an increasing transition-delay so groups cascade in together.
+  document.querySelectorAll('section, header').forEach(section => {
+    const items = section.querySelectorAll('.reveal');
+    items.forEach((el, idx) => {
+      el.style.setProperty('--d', (idx * 90) + 'ms');
+    });
+  });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
+
+  // Sweeping wipe-bar title reveal
+  const titleIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        titleIo.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.title-wipe').forEach(el => titleIo.observe(el));
+
+  // Timeline connecting-line draw-in
+  const timelineIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('line-in');
+        timelineIo.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll('[data-timeline]').forEach(el => timelineIo.observe(el));
+
+  // Flip-in stagger cascade for skill tags
+  document.querySelectorAll('[data-tag-row]').forEach(row => {
+    const tagIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          const tags = entry.target.querySelectorAll('.tag');
+          tags.forEach((tag, idx) => {
+            setTimeout(() => tag.classList.add('flip-in'), idx * 60);
+          });
+          tagIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    tagIo.observe(row);
+  });
+
+  // Split the hero name into letters for a staggered drop-in entrance
+  function splitHeroName(el){
+    const text = el.textContent.trim();
+    const words = text.split(' ');
+    el.textContent = '';
+    words.forEach((word, wi) => {
+      const wordSpan = document.createElement('span');
+      wordSpan.className = 'word' + (wi === words.length - 1 ? ' accent' : '');
+      [...word].forEach((ch, ci) => {
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'letter';
+        letterSpan.textContent = ch;
+        letterSpan.style.animationDelay = (600 + (wi * 6 + ci) * 32) + 'ms';
+        wordSpan.appendChild(letterSpan);
+      });
+      el.appendChild(wordSpan);
+      if(wi < words.length - 1) el.appendChild(document.createTextNode('\u00A0'));
+    });
+  }
+  const heroNameEl = document.querySelector('.hero-name');
+  if(heroNameEl && !reduceMotion){
+    splitHeroName(heroNameEl);
+  }
+
+  // Checkmark draw-in when certifications come into view
+  document.querySelectorAll('.check').forEach(check => {
+    const checkIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('draw');
+          checkIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    checkIo.observe(check);
+  });
+
+  // Scroll progress bar
+  const progressBar = document.getElementById('scroll-progress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressBar.style.width = scrolled + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  // Active nav link tracking — drives both the sliding top indicator and the side dots
+  const navLinks = document.querySelectorAll('[data-nav]');
+  const dotLinks = document.querySelectorAll('[data-dot]');
+  const navIndicator = document.getElementById('nav-indicator');
+  const navInner = document.querySelector('.nav-inner');
+  const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href')));
+
+  function moveIndicatorTo(link){
+    if(!link || !navIndicator || !navInner) return;
+    const linkRect = link.getBoundingClientRect();
+    const innerRect = navInner.getBoundingClientRect();
+    navIndicator.style.width = linkRect.width + 'px';
+    navIndicator.style.transform = `translateX(${linkRect.left - innerRect.left}px)`;
+    navIndicator.classList.add('ready');
+  }
+
+  function setActive(id){
+    navLinks.forEach(l => l.classList.remove('active'));
+    dotLinks.forEach(d => d.classList.remove('active'));
+    const link = document.querySelector('[data-nav][href="' + id + '"]');
+    const dot = document.querySelector('[data-dot][href="' + id + '"]');
+    if(link){ link.classList.add('active'); moveIndicatorTo(link); }
+    if(dot){ dot.classList.add('active'); }
+  }
+
+  const navIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        setActive('#' + entry.target.id);
+      }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+  sections.forEach(s => { if(s) navIo.observe(s); });
+
+  // Keep the sliding indicator aligned on resize (link positions shift)
+  window.addEventListener('resize', () => {
+    const current = document.querySelector('[data-nav].active');
+    if(current) moveIndicatorTo(current);
+  });
+
+  // Prime the indicator on first paint (fonts can shift link widths, so wait for load)
+  window.addEventListener('load', () => setActive('#summary'));
+
+  // Subtle parallax on the hero terminal as the page scrolls
+  const heroTerminal = document.querySelector('.terminal');
+  if(heroTerminal && !reduceMotion){
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if(y < 700){
+        heroTerminal.style.transform = `translateY(${y * 0.12}px)`;
+        heroTerminal.style.opacity = String(Math.max(1 - y / 600, 0));
+      }
+    }, { passive:true });
+  }
+</script>
+
+</body>
+</html>
