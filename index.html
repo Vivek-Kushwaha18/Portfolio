@@ -29,6 +29,60 @@
 
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
+
+  /* ---------- preloader ---------- */
+  .preloader{
+    position:fixed; inset:0; z-index:300;
+    background:var(--bg-deep);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    transition:opacity 0.7s ease, visibility 0.7s ease;
+  }
+  .preloader.done{opacity:0; visibility:hidden; pointer-events:none;}
+  .vessel{
+    width:58px; height:88px;
+    border:2px solid rgba(191,239,245,0.32);
+    border-radius:4px 4px 18px 18px;
+    position:relative; overflow:hidden;
+    background:rgba(191,239,245,0.03);
+  }
+  .vessel .vfill{
+    position:absolute; left:0; right:0; bottom:0; height:0%;
+    background:linear-gradient(180deg, var(--teal), var(--teal-deep));
+    transition:height 0.2s ease-out;
+  }
+  .vessel .vfill::before{
+    content:""; position:absolute; top:-5px; left:-10%; right:-10%; height:10px;
+    background:radial-gradient(ellipse at 50% 50%, rgba(191,239,245,0.9), transparent 72%);
+    animation:surface-wobble 1.5s ease-in-out infinite;
+  }
+  @keyframes surface-wobble{
+    0%,100%{transform:translateX(-5px) scaleY(1);}
+    50%{transform:translateX(5px) scaleY(1.35);}
+  }
+  .preloader-pct{font-family:'IBM Plex Mono', monospace; color:var(--foam); font-size:13px; letter-spacing:0.06em;}
+  .preloader-label{font-family:'IBM Plex Mono', monospace; color:var(--ink-faint); font-size:10.5px; text-transform:lowercase; letter-spacing:0.08em;}
+
+  /* ---------- custom water cursor (fine pointers only) ---------- */
+  body.has-cursor{cursor:none;}
+  body.has-cursor a, body.has-cursor button{cursor:none;}
+  .cursor-dot, .cursor-ring{
+    position:fixed; top:0; left:0; pointer-events:none; z-index:9999;
+    border-radius:50%; transform:translate(-50%,-50%);
+  }
+  .cursor-dot{width:5px; height:5px; background:var(--teal);}
+  .cursor-ring{
+    width:30px; height:30px; border:1px solid rgba(51,185,199,0.5);
+    transition:width 0.25s ease, height 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+  }
+  .cursor-ring.magnetic{
+    width:50px; height:50px;
+    background:rgba(212,169,75,0.08);
+    border-color:var(--amber);
+  }
+  @media (pointer:coarse){
+    .cursor-dot, .cursor-ring{display:none !important;}
+    body.has-cursor{cursor:auto;}
+  }
   body{
     margin:0;
     background:
@@ -253,7 +307,12 @@
     background:rgba(6,22,36,0.82);
     backdrop-filter:blur(10px);
     border-bottom:1px solid var(--line);
+    transition:transform 0.4s cubic-bezier(.65,0,.35,1), box-shadow 0.3s ease;
   }
+  nav.nav-hidden{transform:translateY(-100%);}
+  nav.nav-shrink{box-shadow:0 10px 30px -18px rgba(0,0,0,0.6);}
+  nav.nav-shrink .nav-inner{height:48px;}
+  .nav-inner{transition:height 0.3s ease;}
   .nav-inner{
     position:relative;
     max-width:920px; margin:0 auto; padding:0 28px;
@@ -677,6 +736,103 @@
   }
   @keyframes draw-check{ to{stroke-dashoffset:0;} }
 
+  /* ---------- stats strip ---------- */
+  .stats-strip{padding:0 0 8px;}
+  .stats-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line); border-radius:8px; overflow:hidden;
+  }
+  .stat-cell{background:var(--surface); padding:26px 18px; text-align:center; transition:background 0.25s ease;}
+  .stat-cell:hover{background:var(--surface-2);}
+  .stat-num{
+    font-family:'Space Grotesk', sans-serif; font-size:clamp(26px,4vw,36px); font-weight:700; color:var(--foam);
+  }
+  .stat-num .suffix{color:var(--amber);}
+  .stat-label{margin-top:6px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-faint); text-transform:lowercase;}
+  @media (max-width:640px){ .stats-grid{grid-template-columns:repeat(2,1fr);} }
+
+  /* ---------- tech marquee ---------- */
+  .marquee-wrap{
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    overflow:hidden; padding:16px 0;
+    background:rgba(191,239,245,0.02);
+    margin-top:40px;
+  }
+  .marquee-track{
+    display:flex; width:max-content; gap:44px;
+    animation:marquee-scroll 24s linear infinite;
+  }
+  .marquee-wrap:hover .marquee-track{animation-play-state:paused;}
+  @keyframes marquee-scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  .marquee-item{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink-faint); white-space:nowrap;
+  }
+  .marquee-item .dotsep{width:4px; height:4px; border-radius:50%; background:var(--teal); flex:none;}
+
+  /* ---------- skill proficiency bars ---------- */
+  .proficiency{display:flex; flex-direction:column; gap:15px; margin-bottom:30px;}
+  .prof-row{display:grid; grid-template-columns:130px 1fr 40px; align-items:center; gap:14px;}
+  .prof-name{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--ink);}
+  .prof-track{height:6px; border-radius:4px; background:var(--surface-2); overflow:hidden; position:relative;}
+  .prof-fill{
+    position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:4px;
+    background:linear-gradient(90deg, var(--teal-deep), var(--teal));
+    transition:width 1.1s cubic-bezier(.16,1,.3,1);
+  }
+  .prof-fill::after{
+    content:""; position:absolute; right:-1px; top:-3px; bottom:-3px; width:10px;
+    background:radial-gradient(circle, var(--foam), transparent 70%); opacity:0.85;
+  }
+  .prof-pct{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-faint); text-align:right;}
+  @media (max-width:640px){ .prof-row{grid-template-columns:96px 1fr 34px;} }
+
+  /* ---------- project tilt + glare ---------- */
+  .project-card{transform-style:preserve-3d; will-change:transform;}
+  .project-card .glare{
+    position:absolute; inset:0;
+    background:radial-gradient(circle at var(--gx,50%) var(--gy,50%), rgba(191,239,245,0.14), transparent 60%);
+    opacity:0; transition:opacity 0.3s ease; pointer-events:none;
+  }
+  .project-card:hover .glare{opacity:1;}
+
+  /* ---------- back to top ---------- */
+  .back-to-top{
+    position:fixed; right:26px; bottom:26px; width:46px; height:46px; z-index:60;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s ease, transform 0.3s ease;
+    background:rgba(6,22,36,0.7); backdrop-filter:blur(6px);
+    border-radius:50%; border:1px solid var(--line);
+  }
+  .back-to-top.show{opacity:1; pointer-events:auto;}
+  .back-to-top:hover{transform:translateY(-3px);}
+  .back-to-top svg{position:absolute; inset:0; transform:rotate(-90deg);}
+  .back-to-top circle.ring-bg{stroke:var(--line);}
+  .back-to-top circle.ring-fg{stroke:var(--teal); stroke-linecap:round;}
+  .back-to-top .arrow{position:relative; color:var(--foam); font-size:15px; font-family:'IBM Plex Mono', monospace;}
+  @media (max-width:900px){ .back-to-top{right:16px; bottom:16px;} }
+
+  /* ---------- hero scroll cue ---------- */
+  .scroll-cue{
+    display:flex; flex-direction:column; align-items:center; gap:7px;
+    margin-top:10px;
+    color:var(--ink-faint); font-family:'IBM Plex Mono', monospace;
+    font-size:10px; text-transform:uppercase; letter-spacing:0.12em;
+  }
+  .scroll-cue .chev{
+    width:9px; height:9px; border-right:1px solid var(--teal); border-bottom:1px solid var(--teal);
+    transform:rotate(45deg);
+    animation:chev-bounce 1.6s ease-in-out infinite;
+  }
+  @keyframes chev-bounce{
+    0%,100%{transform:rotate(45deg) translate(0,0); opacity:0.35;}
+    50%{transform:rotate(45deg) translate(4px,4px); opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .marquee-track{animation:none;}
+    .scroll-cue .chev{animation:none;}
+  }
   /* ---------- languages ---------- */
   .lang-row{display:flex; gap:40px; flex-wrap:wrap;}
   .lang-item .lname{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink); font-weight:600;}
@@ -721,6 +877,15 @@
 </style>
 </head>
 <body>
+
+<div class="preloader" id="preloader">
+  <div class="vessel"><div class="vfill" id="preloader-fill"></div></div>
+  <div class="preloader-pct" id="preloader-pct">0%</div>
+  <div class="preloader-label">gauging depth…</div>
+</div>
+
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
 
 <div class="water-field" id="water-field" aria-hidden="true">
   <div class="caustic"></div>
@@ -791,6 +956,7 @@
         <a href="https://github.com/Vivek-Kushwaha18" target="_blank" rel="noopener">github.com/Vivek-Kushwaha18</a>
       </div>
     </div>
+    <div class="scroll-cue reveal"><span>scroll</span><span class="chev"></span></div>
   </div>
 </header>
 
@@ -799,6 +965,32 @@
   <path class="w2" d="M0,38 C180,10 380,54 600,34 C820,14 1020,48 1200,20 L1200,60 L0,60 Z" fill="rgba(212,169,75,0.05)"/>
   <path class="w1" d="M0,44 C200,24 400,50 600,38 C800,26 1000,46 1200,36 L1200,60 L0,60 Z" fill="rgba(191,239,245,0.04)"/>
 </svg>
+
+<section class="stats-strip">
+  <div class="wrap">
+    <div class="stats-grid reveal">
+      <div class="stat-cell">
+        <div class="stat-num"><span class="num" data-target="3">0</span><span class="suffix">+</span></div>
+        <div class="stat-label">academic projects</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num"><span class="num" data-target="2">0</span><span class="suffix">+</span></div>
+        <div class="stat-label">certifications</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num"><span class="num" data-target="7">0</span><span class="suffix">+</span></div>
+        <div class="stat-label">tools &amp; languages</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-num"><span class="num" data-target="2">0</span><span class="suffix">nd</span></div>
+        <div class="stat-label">year, B.Tech CSE</div>
+      </div>
+    </div>
+    <div class="marquee-wrap reveal">
+      <div class="marquee-track" id="marquee-track"></div>
+    </div>
+  </div>
+</section>
 
 <section id="summary">
   <div class="wrap">
@@ -814,6 +1006,34 @@
   <div class="wrap">
     <div class="comment reveal">skills</div>
     <h2 class="section-title title-wipe"><span class="wipe-text">Key Skills</span></h2>
+
+    <div class="proficiency reveal" data-proficiency>
+      <div class="prof-row">
+        <span class="prof-name">Python</span>
+        <div class="prof-track"><div class="prof-fill" data-pct="85"></div></div>
+        <span class="prof-pct">85%</span>
+      </div>
+      <div class="prof-row">
+        <span class="prof-name">SQL / MySQL</span>
+        <div class="prof-track"><div class="prof-fill" data-pct="80"></div></div>
+        <span class="prof-pct">80%</span>
+      </div>
+      <div class="prof-row">
+        <span class="prof-name">pandas / NumPy</span>
+        <div class="prof-track"><div class="prof-fill" data-pct="75"></div></div>
+        <span class="prof-pct">75%</span>
+      </div>
+      <div class="prof-row">
+        <span class="prof-name">Streamlit</span>
+        <div class="prof-track"><div class="prof-fill" data-pct="65"></div></div>
+        <span class="prof-pct">65%</span>
+      </div>
+      <div class="prof-row">
+        <span class="prof-name">C / C++</span>
+        <div class="prof-track"><div class="prof-fill" data-pct="70"></div></div>
+        <span class="prof-pct">70%</span>
+      </div>
+    </div>
 
     <div class="schema-block reveal slide-left">
       <div class="schema-head">table: data_and_programming</div>
@@ -884,7 +1104,8 @@
     <div class="comment reveal">projects</div>
     <h2 class="section-title title-wipe"><span class="wipe-text">Academic Projects</span></h2>
 
-    <div class="project-card reveal slide-right">
+    <div class="project-card reveal slide-right" data-tilt>
+      <div class="glare"></div>
       <span class="project-tag">SQL · Python · OOP</span>
       <h3>Database Management System Project</h3>
       <ul>
@@ -894,7 +1115,8 @@
       </ul>
     </div>
 
-    <div class="project-card reveal slide-left">
+    <div class="project-card reveal slide-left" data-tilt>
+      <div class="glare"></div>
       <span class="project-tag">Python · pandas · NumPy</span>
       <h3>Python Automation Script for Data Processing</h3>
       <ul>
@@ -903,7 +1125,8 @@
       </ul>
     </div>
 
-    <div class="project-card reveal slide-right">
+    <div class="project-card reveal slide-right" data-tilt>
+      <div class="glare"></div>
       <span class="project-tag">Streamlit · pandas · NumPy</span>
       <h3>Interactive Data Dashboard (Streamlit)</h3>
       <ul>
@@ -1042,6 +1265,14 @@
   </div>
 </footer>
 
+<button class="back-to-top" id="back-to-top" aria-label="Back to top">
+  <svg viewBox="0 0 46 46" width="46" height="46">
+    <circle class="ring-bg" cx="23" cy="23" r="20" fill="none" stroke-width="2"></circle>
+    <circle class="ring-fg" id="ring-fg" cx="23" cy="23" r="20" fill="none" stroke-width="2" stroke-dasharray="125.6" stroke-dashoffset="125.6"></circle>
+  </svg>
+  <span class="arrow">↑</span>
+</button>
+
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -1064,7 +1295,7 @@
     typedEl.textContent = query;
     resultEl.classList.add('show');
   } else {
-    window.addEventListener('DOMContentLoaded', () => setTimeout(typeChar, 500));
+    document.body.addEventListener('site-ready', () => setTimeout(typeChar, 350), { once:true });
   }
 
   // Stagger delay assignment: within each section, give successive .reveal
@@ -1163,15 +1394,155 @@
     checkIo.observe(check);
   });
 
-  // Scroll progress bar
+  // Scroll progress bar + back-to-top ring + nav shrink/hide
   const progressBar = document.getElementById('scroll-progress');
+  const backToTop = document.getElementById('back-to-top');
+  const ringFg = document.getElementById('ring-fg');
+  const RING_LEN = 125.6;
+  const siteNav = document.querySelector('nav');
+  let lastScrollY = window.scrollY;
+
   function updateProgress(){
     const h = document.documentElement;
     const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
     progressBar.style.width = scrolled + '%';
+
+    if(ringFg) ringFg.style.strokeDashoffset = String(RING_LEN - (scrolled/100) * RING_LEN);
+    if(backToTop) backToTop.classList.toggle('show', h.scrollTop > 500);
+
+    if(siteNav){
+      siteNav.classList.toggle('nav-shrink', h.scrollTop > 60);
+      const goingDown = h.scrollTop > lastScrollY;
+      siteNav.classList.toggle('nav-hidden', goingDown && h.scrollTop > 220);
+      lastScrollY = h.scrollTop;
+    }
   }
   window.addEventListener('scroll', updateProgress, { passive:true });
   updateProgress();
+
+  if(backToTop){
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top:0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  }
+
+  // Preloader: water level rises to 100% then reveals the page
+  const preloader = document.getElementById('preloader');
+  const preloaderFill = document.getElementById('preloader-fill');
+  const preloaderPct = document.getElementById('preloader-pct');
+  if(preloader){
+    let pct = 0;
+    const finishPreload = () => {
+      preloader.classList.add('done');
+      document.body.dispatchEvent(new CustomEvent('site-ready'));
+      setTimeout(() => preloader.remove(), 800);
+    };
+    if(reduceMotion){
+      finishPreload();
+    } else {
+      const step = () => {
+        pct = Math.min(100, pct + (2 + Math.random()*6));
+        preloaderFill.style.height = pct + '%';
+        preloaderPct.textContent = Math.round(pct) + '%';
+        if(pct < 100){
+          setTimeout(step, 55);
+        } else {
+          setTimeout(finishPreload, 250);
+        }
+      };
+      setTimeout(step, 200);
+    }
+  } else {
+    document.body.dispatchEvent(new CustomEvent('site-ready'));
+  }
+
+  // Custom water cursor — dot + lagging ring, magnetized over interactive elements
+  const finePointer = window.matchMedia('(pointer:fine)').matches;
+  if(finePointer && !reduceMotion){
+    document.body.classList.add('has-cursor');
+    const cDot = document.getElementById('cursor-dot');
+    const cRing = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX; my = e.clientY;
+      cDot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+    });
+    (function ringLoop(){
+      rx += (mx - rx) * 0.16;
+      ry += (my - ry) * 0.16;
+      cRing.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(ringLoop);
+    })();
+    document.querySelectorAll('a, button, .ripple-el, .tag').forEach(el => {
+      el.addEventListener('mouseenter', () => cRing.classList.add('magnetic'));
+      el.addEventListener('mouseleave', () => cRing.classList.remove('magnetic'));
+    });
+  }
+
+  // Animated count-up for the stats strip
+  document.querySelectorAll('.stat-num .num').forEach(numEl => {
+    const target = parseInt(numEl.dataset.target, 10) || 0;
+    const statIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          if(reduceMotion){ numEl.textContent = target; statIo.unobserve(numEl); return; }
+          const duration = 1100;
+          const startTime = performance.now();
+          const tick = (now) => {
+            const t = Math.min(1, (now - startTime) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            numEl.textContent = Math.round(eased * target);
+            if(t < 1) requestAnimationFrame(tick); else numEl.textContent = target;
+          };
+          requestAnimationFrame(tick);
+          statIo.unobserve(numEl);
+        }
+      });
+    }, { threshold: 0.5 });
+    statIo.observe(numEl);
+  });
+
+  // Build the infinite tech marquee from the skill set, duplicated for a seamless loop
+  const marqueeItems = ['Python','SQL','MySQL','PyMySQL','NumPy','pandas','Streamlit','C','C++','Data Validation','OOP','Query Optimization'];
+  const marqueeTrack = document.getElementById('marquee-track');
+  if(marqueeTrack){
+    const buildSet = () => marqueeItems.map(t => `<span class="marquee-item">${t}<span class="dotsep"></span></span>`).join('');
+    marqueeTrack.innerHTML = buildSet() + buildSet();
+  }
+
+  // Skill proficiency bars: fill width (and count percentage) on scroll into view
+  document.querySelectorAll('.prof-fill').forEach(bar => {
+    const pct = parseInt(bar.dataset.pct, 10) || 0;
+    const profIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          bar.style.width = pct + '%';
+          profIo.unobserve(bar);
+        }
+      });
+    }, { threshold: 0.4 });
+    profIo.observe(bar);
+  });
+
+  // 3D tilt + glare on project cards
+  if(!reduceMotion){
+    document.querySelectorAll('[data-tilt]').forEach(card => {
+      card.style.transition = 'transform 0.25s ease, box-shadow 0.3s ease, border-color 0.3s ease';
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rotY = (px - 0.5) * 10;
+        const rotX = (0.5 - py) * 10;
+        card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px)`;
+        card.style.setProperty('--gx', (px*100) + '%');
+        card.style.setProperty('--gy', (py*100) + '%');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+      });
+    });
+  }
 
   // Active nav link tracking — drives both the sliding top indicator and the side dots
   const navLinks = document.querySelectorAll('[data-nav]');
